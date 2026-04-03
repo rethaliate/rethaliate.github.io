@@ -148,6 +148,9 @@ function step(dt) {
     }
 }
 
+const horse = new Image(40, 40);
+horse.src = "img/horse.webp";
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let l of pegs) {
@@ -157,10 +160,7 @@ function draw() {
         ctx.fill();
     }
     for (let c of circles) {
-        ctx.fillStyle = 'rgb(78, 51, 32)';
-        ctx.beginPath();
-        ctx.arc(c.pos.x, c.pos.y, c.r, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.drawImage(horse, c.pos.x-20, c.pos.y-20, 40, 40);
     }
 }
 

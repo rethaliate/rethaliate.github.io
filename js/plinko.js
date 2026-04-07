@@ -30,9 +30,11 @@ class Vec {
 
 // Circle body
 class Circle {
-    constructor(x, y, r, m=1) {
+    constructor(x, y, r, m, omega, rot) {
         this.pos = new Vec(x,y);
         this.vel = new Vec(0,0);
+        this.rot = rot;
+        this.omega = omega; 
         this.r = r;
         this.m = m;
         this.invM = 1 / m;
@@ -44,6 +46,7 @@ class Circle {
         let gravity = new Vec(0,300);
         this.vel = this.vel.add(gravity.mul(dt));
         this.pos = this.pos.add(this.vel.mul(dt));
+        this.rot += this.omega * dt;
     }
 }
 
@@ -72,6 +75,8 @@ function resolveCirclePeg(circle, peg) {
     let diff = circle.pos.sub(cp);
     let dist = diff.len();
     if (dist < circle.r) {
+        let dOmega = circle.omega * Math.random() * 0.5;
+        circle.omega -= dOmega;
         let n = diff.norm();
         let penetration = circle.r - dist;
         circle.pos = circle.pos.add(n.mul(penetration + 0.01));
@@ -90,6 +95,9 @@ function resolveCircleCircle(a, b) {
         return;
     }
     if (d < a.r + b.r) {
+        let dOmega = (a.omega - b.omega) * Math.random() * 0.5;
+        a.omega -= dOmega;
+        b.omega += dOmega;
         let n = diff.mul(1 / d);
         let penetration = a.r + b.r - d;
         let totalInv = a.invM + b.invM;
@@ -160,7 +168,11 @@ function draw() {
         ctx.fill();
     }
     for (let c of circles) {
-        ctx.drawImage(horse, c.pos.x-20, c.pos.y-20, 40, 40);
+        ctx.save();
+        ctx.translate(c.pos.x, c.pos.y);
+        ctx.rotate(c.rot);
+        ctx.drawImage(horse, -20, -20, 40, 40);
+        ctx.restore();
     }
 }
 
@@ -177,7 +189,7 @@ function loop(t) {
 
     if (Math.random() < 0.005) {
         const xPos = circleSpawnLeft + Math.random() * (circleSpawnRight - circleSpawnLeft);
-        circles.push(new Circle(xPos, -10, 20, 10));
+        circles.push(new Circle(xPos, -10, 20, 1, (Math.random()-0.5) * 100, 0));
     }
 
     counter = counter + speed;
@@ -186,5 +198,5 @@ function loop(t) {
 requestAnimationFrame(loop);
 
 window.onpointerdown = function(e) {
-    circles.push(new Circle(e.offsetX,e.offsetY,20,1));
+    circles.push(new Circle(e.offsetX,e.offsetY,20,1, (Math.random()-0.5) * 100, 0));
 }

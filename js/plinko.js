@@ -75,7 +75,7 @@ function resolveCirclePeg(circle, peg) {
     let diff = circle.pos.sub(cp);
     let dist = diff.len();
     if (dist < circle.r) {
-        let dOmega = circle.omega * Math.random() * 0.5;
+        let dOmega = circle.omega * Math.random();
         circle.omega -= dOmega;
         let n = diff.norm();
         let penetration = circle.r - dist;
@@ -85,6 +85,8 @@ function resolveCirclePeg(circle, peg) {
             let e = 0.8;
             circle.vel = circle.vel.sub(n.mul((1 + e) * vn));
         }
+        let imp = new Vec(-diff.y, diff.x);
+        circle.vel = circle.vel.add(imp.mul(dOmega));
     }
 }
 
@@ -113,6 +115,9 @@ function resolveCircleCircle(a, b) {
         let impulse = n.mul(j);
         a.applyImpulse(impulse.mul(-1));
         b.applyImpulse(impulse);
+        let imp = new Vec(-diff.y, diff.x);
+        a.vel = a.vel.add(imp.mul(dOmega));
+        b.vel = b.vel.sub(imp.mul(dOmega));
     }
 }
 
@@ -187,10 +192,10 @@ function loop(t) {
 
     circles = circles.filter(c => c.pos.y < canvas.height);
 
-    if (Math.random() < 0.005) {
-        const xPos = circleSpawnLeft + Math.random() * (circleSpawnRight - circleSpawnLeft);
-        circles.push(new Circle(xPos, -10, 20, 1, (Math.random()-0.5) * 100, 0));
-    }
+    // if (Math.random() < 0.005) {
+    //     const xPos = circleSpawnLeft + Math.random() * (circleSpawnRight - circleSpawnLeft);
+    //     circles.push(new Circle(xPos, -10, 20, 1, (Math.random()-0.5) * 100, 0));
+    // }
 
     counter = counter + speed;
     requestAnimationFrame(loop);

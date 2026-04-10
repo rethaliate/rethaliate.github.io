@@ -192,10 +192,10 @@ function loop(t) {
 
     circles = circles.filter(c => c.pos.y < canvas.height);
 
-    // if (Math.random() < 0.005) {
-    //     const xPos = circleSpawnLeft + Math.random() * (circleSpawnRight - circleSpawnLeft);
-    //     circles.push(new Circle(xPos, -10, 20, 1, (Math.random()-0.5) * 100, 0));
-    // }
+    if (Math.random() < 0.005) {
+        const xPos = circleSpawnLeft + Math.random() * (circleSpawnRight - circleSpawnLeft);
+        circles.push(new Circle(xPos, -10, 20, 1, (Math.random()-0.5) * 100, 0));
+    }
 
     counter = counter + speed;
     requestAnimationFrame(loop);
